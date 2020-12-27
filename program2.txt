@@ -10,3 +10,4 @@ setLed 1 HIGH
 delay 1000
 }
 setLed 1 LOW
+setSpeaker LOW

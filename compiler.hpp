@@ -13,13 +13,13 @@
 #include "parser.hpp"
 #include "runtime.hpp"
 
-
 //Statement indexes:
 #define SET_LED_STATMNT		0
 #define RETURN_LED_STATMNT	1
 #define RETURN_KNOP_STATMNT	2
 #define WHILE_STATEMENT		3
 #define DELAY_STATEMENT		4
+#define SPEAKER_STATEMENT	5
 //Expression indexes:
 #define LED1_STATE_EXPR		0
 #define LED2_STATE_EXPR		1
@@ -28,6 +28,7 @@
 #define KNOP2_STATE_EXPR	4
 #define KNOP3_STATE_EXPR	5
 #define KNOP4_STATE_EXPR	6
+#define SPEAKER_EXPRESSION	7
 //Invalid input index:
 #define INVALID_INPUT		999
 //Programs that make use of the compiler:
@@ -52,6 +53,7 @@ class COMPILER_CLASS{
 		bool executeReturnKnop(char *tokens[MAX_NUM_TOKENS]);
 		bool executeReturnLed(char *tokens[MAX_NUM_TOKENS]);
 		bool executeSetLed(char *tokens[MAX_NUM_TOKENS]);
+		bool executeSetSpeaker(char *tokens[MAX_NUM_TOKENS]);
 		bool executeDelay(char *tokens[MAX_NUM_TOKENS]);
 		//while:
 		bool executeWhile(char *tokens[], uint16_t lineNumber);
@@ -67,6 +69,7 @@ class COMPILER_CLASS{
 		char returnKnop_stmnt[MAX_TOKEN_SIZE];
 		char while_stmnt[MAX_TOKEN_SIZE];
 		char delay_stmnt[MAX_TOKEN_SIZE];
+		char speaker_stmt[MAX_NUM_TOKENS];
 	//Epressions:
 		uint16_t expressionIndex(char *input);
 		void getExpressions(void);
@@ -80,6 +83,7 @@ class COMPILER_CLASS{
 		char knop2State_exp[MAX_TOKEN_SIZE]; 	char knop2State_value[MAX_TOKEN_SIZE];
 		char knop3State_exp[MAX_TOKEN_SIZE]; 	char knop3State_value[MAX_TOKEN_SIZE];
 		char knop4State_exp[MAX_TOKEN_SIZE]; 	char knop4State_value[MAX_TOKEN_SIZE];
+		char speakerState_exp[MAX_NUM_TOKENS];	char speakerState_value[MAX_NUM_TOKENS];
 	//Program
 		uint16_t oProgNum;
 	//Classed:

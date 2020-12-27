@@ -83,6 +83,7 @@ void progThread::skipToLine(uint16_t lineNumber, char *fileName, uint8_t currPro
 };
 
 void *progThread::thread(void *pThreadData) {
+	
 // Maak een referentie naar het class object
 	progThread *pThis;
 	pThis = (progThread*)pThreadData;
@@ -177,10 +178,10 @@ void *progThread::thread(void *pThreadData) {
 								file[currProg].close();
 								pthread_mutex_unlock(&oLockInput);
 								pThis->delay(40);
-								//pthread_mutex_lock(&oLockOutput);
-								//compProg[currProg].closeProgram();
-								//pthread_mutex_unlock(&oLockOutput);
-								//pThis->delay(40);
+								pthread_mutex_lock(&oLockOutput);
+								compProg[currProg].closeProgram();
+								pthread_mutex_unlock(&oLockOutput);
+								pThis->delay(40);
 								pthread_exit(NULL);
 							}
 							pthread_mutex_lock(&oLockOutput);

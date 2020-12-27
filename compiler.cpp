@@ -18,12 +18,14 @@ void COMPILER_CLASS::getStatements(void){
 	strcpy(returnKnop_stmnt, "returnKnop");
 	strcpy(while_stmnt, "while{");
 	strcpy(delay_stmnt, "delay");
+	strcpy(speaker_stmt, "setSpeaker");
 	
 	statements[SET_LED_STATMNT] 	= setLed_stmnt;
 	statements[RETURN_LED_STATMNT] 	= returnLed_stmnt;
 	statements[RETURN_KNOP_STATMNT] = returnKnop_stmnt;
 	statements[WHILE_STATEMENT] 	= while_stmnt;
 	statements[DELAY_STATEMENT]		= delay_stmnt;
+	statements[SPEAKER_STATEMENT] 	= speaker_stmt;
 }
 /*
 	initializes all expressions and their values known to the program
@@ -31,13 +33,14 @@ void COMPILER_CLASS::getStatements(void){
 */
 void COMPILER_CLASS::getExpressions(void){
 	//Expressions and they're starting states
-	strcpy(led1State_exp,"led1-state"); 	strcpy(led1State_value,"LOW");
-	strcpy(led2State_exp,"led2-state"); 	strcpy(led2State_value, "LOW");
-	strcpy(led3State_exp, "led3-state"); 	strcpy(led3State_value, "LOW");
-	strcpy(knop1State_exp, "knop1-state"); 	strcpy(knop1State_value, "LOW");
-	strcpy(knop2State_exp, "knop2-state"); 	strcpy(knop2State_value, "LOW");
-	strcpy(knop3State_exp, "knop3-state"); 	strcpy(knop3State_value, "LOW");
-	strcpy(knop4State_exp, "knop4-state"); 	strcpy(knop4State_value, "LOW");
+	strcpy(led1State_exp,"led1-state"); 		strcpy(led1State_value,"LOW");
+	strcpy(led2State_exp,"led2-state"); 		strcpy(led2State_value, "LOW");
+	strcpy(led3State_exp, "led3-state"); 		strcpy(led3State_value, "LOW");
+	strcpy(knop1State_exp, "knop1-state"); 		strcpy(knop1State_value, "LOW");
+	strcpy(knop2State_exp, "knop2-state"); 		strcpy(knop2State_value, "LOW");
+	strcpy(knop3State_exp, "knop3-state"); 		strcpy(knop3State_value, "LOW");
+	strcpy(knop4State_exp, "knop4-state"); 		strcpy(knop4State_value, "LOW");
+	strcpy(speakerState_exp, "speaker-state");	strcpy(speakerState_value, "LOW");
 	
 	expressions[LED1_STATE_EXPR] 	= led1State_exp;
 	expressions[LED2_STATE_EXPR] 	= led2State_exp;
@@ -46,15 +49,17 @@ void COMPILER_CLASS::getExpressions(void){
 	expressions[KNOP2_STATE_EXPR] 	= knop2State_exp;
 	expressions[KNOP3_STATE_EXPR] 	= knop3State_exp;
 	expressions[KNOP4_STATE_EXPR] 	= knop4State_exp;
+	expressions[SPEAKER_EXPRESSION] = speakerState_exp;
 	
 	//Starting values:
-	expressionValues[LED1_STATE_EXPR] 	= led1State_value;
-	expressionValues[LED2_STATE_EXPR] 	= led2State_value;
-	expressionValues[LED3_STATE_EXPR] 	= led3State_value;
-	expressionValues[KNOP1_STATE_EXPR] 	= knop1State_value;
-	expressionValues[KNOP2_STATE_EXPR] 	= knop2State_value;
-	expressionValues[KNOP3_STATE_EXPR] 	= knop3State_value;
-	expressionValues[KNOP4_STATE_EXPR] 	= knop4State_value;
+	expressionValues[LED1_STATE_EXPR] 		= led1State_value;
+	expressionValues[LED2_STATE_EXPR] 		= led2State_value;
+	expressionValues[LED3_STATE_EXPR] 		= led3State_value;
+	expressionValues[KNOP1_STATE_EXPR] 		= knop1State_value;
+	expressionValues[KNOP2_STATE_EXPR] 		= knop2State_value;
+	expressionValues[KNOP3_STATE_EXPR] 		= knop3State_value;
+	expressionValues[KNOP4_STATE_EXPR] 		= knop4State_value;
+	expressionValues[SPEAKER_EXPRESSION] 	= speakerState_value;
 }
 /*
 	Initializes all statement instructions and expression known to the program
@@ -142,6 +147,30 @@ bool COMPILER_CLASS::executeSetLed(char *tokens[MAX_NUM_TOKENS]){
 	newOutputAvailable = true;
 	//cout << progOutput[oProgNum] << endl;
 	//pthread_mutex_unlock(&oLockOutput);
+	return true;
+}
+
+bool COMPILER_CLASS::executeSetSpeaker(char *tokens[MAX_NUM_TOKENS]){
+	int state;
+	//determine desired state
+	if (!strcmp(tokens[1], "HIGH")){
+		state = HIGH;
+		strcpy(expressionValues[SPEAKER_EXPRESSION], "HIGH");
+	}
+	else if(!strcmp(tokens[1], "LOW")){
+		state = LOW;
+		strcpy(expressionValues[SPEAKER_EXPRESSION], "LOW");
+	}
+	else{
+		sprintf(compOutput,"not a valid speaker-state...");
+		progOutput[oProgNum] = compOutput;
+		newOutputAvailable = true;
+		return false;
+	}
+	runtimeObjct.setSpeaker(state, compOutput);
+	progOutput[oProgNum] = compOutput;
+	newOutputAvailable = true;
+
 	return true;
 }
 /*
@@ -419,9 +448,22 @@ uint8_t COMPILER_CLASS::executeInstruction(char *tokens[MAX_NUM_TOKENS], uint16_
 		executeDelay(tokens);
 		return instruction;
 	}
+	if(instruction == SPEAKER_STATEMENT){
+		if(tokens[1] == NULL){
+			//pthread_mutex_lock(&oLockOutput);
+			sprintf(compOutput,"Error...Nothing to set speaker to, check line: %u", lineNumber);
+			progOutput[oProgNum] = compOutput;
+			newOutputAvailable = true;
+			//pthread_mutex_unlock(&oLockOutput);
+			//cout<<"Error...no time to delay, check line: "<<(unsigned) lineNumber<<endl;
+			return 0;
+		}
+		executeSetSpeaker(tokens);
+		return instruction;
+	}
 	return false;
 }
 
 void COMPILER_CLASS::closeProgram(void){
-	runtimeObjct.closeBcm();
+	runtimeObjct.setSpeaker(LOW, compOutput);
 }

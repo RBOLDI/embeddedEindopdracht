@@ -12,6 +12,19 @@ WINDOW * mainwin, * childWin_1, * childWin_2, * childwinh;
 char *fileNames[255];
 bool programs;
 
+int initXmegaSerial(void){
+	char sUsbName[] = "/dev/ttyACM0";
+	if (!InitXmegaSerial(sUsbName, B38400, 0)) {
+		//fout
+		mvwaddstr(childWin_1, 1, 3, "VERBINDING MISLUKT");
+	}
+	else {
+		//goei
+		mvwaddstr(childWin_1, 1, 3, "Verbonden");
+	};
+	wrefresh(childWin_1);
+	return 0;
+}
 
 pthread_mutex_t oLockOutput;
 pthread_mutex_t oLockInput;
@@ -24,8 +37,9 @@ void initNcursesWindows(void){
 }
 int main(int nArgc, char* aArgv[]) {
 	// Initialiseren
-	 int nRet;
+	int nRet;
 	uint8_t max_numPrograms = PROG_NUM;
+	initXmegaSerial();
 	nRet = pthread_mutex_init(&oLockOutput, NULL);
 	if (nRet > 0) {
 	printf("Mutex kon niet gemaakt worden!\n");

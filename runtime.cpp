@@ -51,6 +51,22 @@ int RUNTIME_CLASS::setLed(char led, int state, char *output)
 	return 0;
 }
 
+int RUNTIME_CLASS::setSpeaker(int state, char *output)
+{
+	int key;
+	sprintf(output,"execute setSpeaker");
+	//cout<<"execute setLed"<<endl;
+	if ( state == HIGH ) {
+		key = SPEAKER_ON;
+		XmegaWriteByte((uint8_t*)&key);
+	}
+	else{
+		key = SPEAKER_OFF;
+		XmegaWriteByte((uint8_t*)&key);
+	}
+	return 0;
+}
+
 int RUNTIME_CLASS::pollLed(char led, char *output)
 {
 	sprintf(output,"execute returnLed");

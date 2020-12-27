@@ -2,11 +2,13 @@ setLed 1 HIGH
 returnLed 1
 setLed
 while{ led1-state == HIGH do:
+setSpeaker HIGH
 setLed 1 HIGH
 delay 1000
 returnKnop 1
 returnLed 1
 setLed 1 HIGH
 delay 1000
+setSpeaker LOW
 }
 setLed 1 LOW
